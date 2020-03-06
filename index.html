@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Canvas Demo</title>
+</head>
+
+<body>
+
+    <style>
+        #startButton {
+            position: absolute;
+            top: 200px;
+            left: 300px;
+            width:200px;
+            height: 50px;
+            font-size: 20px;
+        }
+        #introduction {
+            position: absolute;
+            top: 50px;
+            left: 300px;
+            width:300px;
+            height: 50px;
+            font-size: 15px;
+        }
+/*         #gameOver {
+            position: absolute;
+            top: 50px;
+            left: 300px;
+            width:300px;
+            height: 50px;
+            font-size: 15px;
+        } */
+    </style>
+    <canvas id="canvas" width=800 height="400" style="border:1px solid #000000;"></canvas>
+    <button type="button" id="startButton" onclick="initilize();">Start</button>
+    <p id="introduction">Use the up and down arrows to move your character.
+        <br>To score points you have to collide with green items. As you gain more points the game will get more difficult. If you collide with red items you lose lives. When you reach zero lives the game will end.</p>
+
+
+<!--     <p display id="gameOver">Game Over!
+        <br>Play Again?</p> -->
+
+    <script>
+        //   clear();
+         //  updateValues();
+         // handleEdges();
+         // handleCollision();
+         //draw();
+        let startButton = document.getElementById('startButton');
+        let intro = document.getElementById('introduction');
+        let c = document.querySelector("canvas");
+        let ctx = c.getContext("2d");
+        let player = {
+            x: 25,
+            y: 150
+        };
+        let collisionObject = {
+            x: 750,
+            y: Math.floor(Math.random() * c.height)
+        };
+        let benefitObject = {
+            x: 750,
+            y: Math.floor(Math.random() * c.height)
+        };
+        let score = 0;
+        let lives = 3;
+        let level = 1;
+        let paused = false;
+        var background = new Image();
+        background.src = "https://i.pinimg.com/originals/27/72/88/277288be0b6f38eeee957bc9ab77b55e.jpg";
+
+        var upPressed = false;
+        var downPressed = false;
+       
+    document.addEventListener("keydown", keyDownHandler, false);
+    document.addEventListener("keyup", keyUpHandler, false);
+        
+        
+//-------------------------------------------------------------------------------        
+    function keyDownHandler(e) {
+   
+        if(e.keyCode == 40) {
+            downPressed = true;
+        }
+        else if(e.keyCode == 38) {
+            upPressed = true;
+        }
+    }
+        
+        
+//-------------------------------------------------------------------------------
+    function keyUpHandler(e) {
+
+        if(e.keyCode == 40) {
+            downPressed = false;
+        }
+        else if(e.keyCode == 38) {
+            upPressed = false;
+        }
+    }
+
+
+        let initilize = () => {
+            ctx.drawImage(background, 0, 0, c.width, c.height);
+            startButton.style.display = 'none';
+            intro.style.display = 'none';
+            draw();
+        }
+        let draw = () => {
+            //clears board
+            clear();
+            ctx.drawImage(background, 0, 0, c.width, c.height);
+            updateValues();
+            
+            handleCollision();
+            handleEdge();
+            ctx.beginPath();
+            ctx.fillStyle = "blue";
+            ctx.rect(player["x"], player["y"], 50, 50);
+            ctx.fill();
+            ctx.closePath();
+            ctx.beginPath();
+            ctx.fillStyle = "red";
+            ctx.rect(collisionObject["x"], collisionObject["y"], 50, 50);
+            ctx.fill();
+            ctx.closePath();
+            ctx.beginPath();
+            ctx.fillStyle = "green";
+            ctx.rect(benefitObject["x"], benefitObject["y"], 50, 50);
+            ctx.fill();
+            ctx.closePath();
+            displayScoreScreen();
+            
+            if(lives == 0) {
+                gameOver();
+            } else{
+             window.requestAnimationFrame(draw);
+
+            }
+            
+        }
+        let gameOver = () => {
+            clear();
+            displayScoreScreen();
+            lives = 3;
+            score = 0;
+            level = 1;
+            startButton.style.display = 'inline';
+            
+        }
+        let displayScoreScreen = () => {
+            ctx.font = "15px Arial";
+            ctx.fillStyle = "purple";
+            ctx.fillText('level: ' + level, 700, 25);
+            ctx.fillStyle = "purple";
+            ctx.fillText('Score: ' + score, 700, 50);
+            ctx.fillStyle = "red";
+            ctx.fillText('Lives: ' + lives, 700, 75);
+        }
+        let handleEdge = () => {
+            if(player["y"] > c.height - 50) {
+                player["y"] = c.height - 50;
+            } else if(player["y"] < 0) {
+                player["y"] = 0;
+            }
+            if(collisionObject["x"] < 0) {
+                collisionObject["x"] = c.width - 50;
+                collisionObject["y"] = Math.floor(Math.random() * c.height) + 25
+            }
+            if(collisionObject["y"] > c.height - 50) {
+                collisionObject["y"] = c.height - 50;
+            } else if(collisionObject["y"] < 0) {
+                collisionObject["y"] = 0;
+            }
+            if(benefitObject["x"] < 0) {
+                benefitObject["x"] = c.width - 50;
+                benefitObject["y"] = Math.floor(Math.random() * c.height) + 25
+            }
+            if(benefitObject["y"] > c.height - 50) {
+                benefitObject["y"] = c.height - 50;
+            } else if(benefitObject["y"] < 0) {
+                benefitObject["y"] = 0;
+            }
+        }
+        
+        
+        
+        let updateValues = () => {
+            if(score < 500) {
+                collisionObject["x"] -= 2;
+                benefitObject["x"] -= 2;
+            } else if(score < 1000) {
+                collisionObject["x"] -= 3;
+                benefitObject["x"] -= 3;
+            } else  {
+                collisionObject["x"] -= 4;
+                benefitObject["x"] -= 4;
+            }
+            
+            
+
+    if(downPressed) {
+        player.y += 5;
+    }
+    else if(upPressed) {
+        player.y -= 5;
+    }
+             
+        }
+        
+        
+        
+        
+        
+        let clear = () => {
+            ctx.clearRect(0, 0, 800, 400);
+        }
+        let handleCollision = () => {
+            //if hits the benefit object(posative)
+            if(player["x"] < benefitObject["x"] + 50 && player["x"] + 50 > benefitObject["x"] && player["y"] < benefitObject["y"] + 50 && player["y"] + 50 > benefitObject["y"]) {
+                console.log("collision");
+                benefitObject["y"] = Math.floor(Math.random() * c.height) + 25
+                benefitObject["x"] = 750;
+                score += 100;
+                level += 1;
+            }
+            //if it his collisionObject(negative)
+            if(player["x"] < collisionObject["x"] + 50 && player["x"] + 50 > collisionObject["x"] && player["y"] < collisionObject["y"] + 50 && player["y"] + 50 > collisionObject["y"]) {
+                console.log("collision");
+                collisionObject["y"] = Math.floor(Math.random() * c.height) + 25
+                collisionObject["x"] = 750;
+                lives -= 1;
+            }
+        }
+    </script>
+</body>
+
+</html>
