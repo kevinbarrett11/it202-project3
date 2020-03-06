@@ -202,9 +202,21 @@
             } else if(score < 1000) {
                 collisionObject["x"] -= 3;
                 benefitObject["x"] -= 3;
-            } else  {
+            } else if(score < 1500)  {
                 collisionObject["x"] -= 4;
                 benefitObject["x"] -= 4;
+            }else if(score < 2000)  {
+                collisionObject["x"] -= 5;
+                benefitObject["x"] -= 5;
+            }else if(score < 2500)  {
+                collisionObject["x"] -= 6;
+                benefitObject["x"] -= 6;
+            }else if(score < 3000)  {
+                collisionObject["x"] -= 7;
+                benefitObject["x"] -= 7;
+            }else{
+                collisionObject["x"] -= 8;
+                benefitObject["x"] -= 8;
             }
             
             
